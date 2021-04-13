@@ -180,7 +180,8 @@ class LogStash::Inputs::Gelf < LogStash::Inputs::Base
   def udp_listener(output_queue)
     @logger.info("Starting gelf listener (udp) ...", :address => "#{@host}:#{@port_udp}")
 
-    @udp = UDPSocket.new(Socket::AF_INET)
+    address_family, _, _ = Socket.getaddrinfo(@host, @port_udp)[0]
+    @udp = UDPSocket.new(Socket.const_get(address_family))
     @udp.bind(@host, @port_udp)
 
     while !stop?
